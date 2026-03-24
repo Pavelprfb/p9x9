@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Update Post</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <style>
+    body {
+      background: #121212;
+      color: #eaeaea;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+    }
+
+    .card {
+      background: #1f1f1f;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .field {
+      position: relative;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field i {
+      position: absolute;
+      left: 12px;
+      color: #888;
+      font-size: 14px;
+      pointer-events: none;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 12px 12px 38px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: #fff;
+      width: 70%;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #03dac6;
+    }
+
+    .actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .actions button {
+      padding: 8px 10px;
+      border: none;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #ccc;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .actions button:hover {
+      background: #03dac6;
+      color: #121212;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #03dac6;
+      color: #121212;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .submit-btn:hover {
+      background: #00bfa5;
+      transform: scale(1.03);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h2>✏️ Update Post</h2>
+
+      <form method="POST">
+
+        <!-- reusable field -->
+        <div class="field">
+          <i class="fas fa-route"></i>
+          <input name="routeName" value="<%= post.routeName %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-heading"></i>
+          <input name="title" value="<%= post.title %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-heading"></i>
+          <input name="description" value="<%= post.description %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-image"></i>
+          <input name="imageLink" value="<%= post.imageLink %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-video"></i>
+          <input name="videoLink" value="<%= post.videoLink %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-eye"></i>
+          <input name="totalView" value="<%= post.totalView %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-clock"></i>
+          <input name="duration" value="<%= post.duration %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <i class="fas fa-tags"></i>
+          <input name="category" value="<%= post.category.join(',') %>">
+          <div class="actions">
+            <button type="button" onclick="copy(this)">📋</button>
+            <button type="button" onclick="paste(this)">📥</button>
+            <button type="button" onclick="clearInput(this)">❌</button>
+          </div>
+        </div>
+
+        <button class="submit-btn" type="submit">
+          <i class="fas fa-save"></i> Update
+        </button>
+
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function getInput(btn) {
+      return btn.closest('.field').querySelector('input');
+    }
+
+    function copy(btn) {
+      const input = getInput(btn);
+      input.select();
+      document.execCommand('copy');
+    }
+
+    function paste(btn) {
+      const input = getInput(btn);
+      navigator.clipboard.readText().then(text => {
+        input.value = text;
+      });
+    }
+
+    function clearInput(btn) {
+      const input = getInput(btn);
+      input.value = '';
+    }
+  </script>
+
+</body>
+</html>

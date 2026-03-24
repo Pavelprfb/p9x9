@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Plyr CSS -->
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css"/>
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../css/index.css"> <!-- তুমি আগে যা দিলে সেটা ব্যবহার হবে -->
+
+  <title><%= oneData.title %> - <%= websiteName %></title>
+  
+  
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="<%= oneData.description %>" />
+  <meta name="keywords" content="<%= oneData.category %>" />
+  <link rel="icon" href="<%= img %>"/>
+  
+  <link rel="canonical" href="<%= url %>/videos/<%= oneData.routeName %>" />
+
+  <!-- og tag -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="<%= oneData.title %> - <%= websiteName %>">
+  <meta property="og:url" content="<%= url %>/videos/<%= oneData.routeName %>">
+  <meta property="og:image" content="<%= oneData.imageLink %>">
+  <meta property="og:description" content="<%= oneData.description %>" />
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="<%= oneData.title %> - <%= websiteName %>">
+  <meta name="twitter:site" content="@<%= websiteName %>">
+  <meta name="twitter:description" content="<%= oneData.description %>">
+  <meta name="twitter:image" content="<%= oneData.imageLink %>">
+  <meta name="twitter:image:alt" content="<%= oneData.title %>">
+  <meta name="twitter:card" content="summary_large_image" />
+  
+  
+ <!-- Schema -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "<%= oneData.title %>",
+  "description": "<%= oneData.description %>",
+  "thumbnailUrl": [
+    "<%= oneData.imageLink %>"
+  ],
+  "uploadDate": "<%= formattedDate %>",
+  "duration": "<%= isoTime %>",
+  "contentUrl": "<%= url %>/videos/<%= oneData.routeName %>",
+  "embedUrl": "<%= url %>/videos/<%= oneData.routeName %>",
+  "potentialAction": {
+    "@type": "SeekToAction",
+    "target": "<%= url %>/videos/<%= oneData.routeName %>?seek={seek_to_second_number}",
+    "startOffset-input": "required name=seek_to_second_number"
+  }
+}
+</script>
+  
+  <style>
+    .downloadBtn{
+      display: block;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<%- include('../partials/header') %>
+
+<div class="indexContainer">
+
+  <%- include('../partials/searchForm') %>
+
+  <!-- ================= VIDEO PLAYER ================= -->
+  <div class="video-card">
+    <video
+      id="player"
+      playsinline
+      controls
+      poster="<%= oneData.imageLink %>"
+    >
+      <source src="<%= oneData.videoLink %>" type="video/mp4">
+    </video>
+
+    <div class="content">
+      <h1 style="color:#38bdf8;"><%= oneData.title %></h1>
+
+  <a href="<%= smartLink %>" class="downloadBtn" style="margin-top:20px; padding:10px 20px; background:#38bdf8; color:#020617; border:none; border-radius:8px; cursor:pointer; text-decoration: none; margin: auto;">Download</a>
+      <div class="footer">
+        <% if (oneData.duration && oneData.duration !== '0') { %>
+          <span>⏱ <%= oneData.duration %></span>
+        <% } %>
+        <span>👁 <%= oneData.totalView %> views</span>
+        <span>📅 <%= new Date(oneData.createdAt).toLocaleDateString() %></span>
+      </div>
+
+      <div class="category">
+        <% oneData.category.forEach(cat => { %>
+          <span><%= cat.trim() %></span>
+        <% }) %>
+      </div>
+      
+      <% if(oneData.description && oneData.description.trim() !== '') { %>
+        <div class="description" style="margin-top:10px;"><%= oneData.description %></div>
+      <% } %>
+
+    </div>
+  </div>
+
+  <a href="<%= telegramLink %>"  style="margin-top:20px; padding:10px 20px; background:#38bdf8; color:#020617; border:none; border-radius:8px; cursor:pointer; text-decoration: none;">Joint Telegram</a>
+  <!-- ================= SUGGESTED VIDEOS ================= -->
+  <h2 style="margin-top:30px; color:#38bdf8;">Suggested Videos</h2>
+
+  <div class="grid" id="suggestedContainer">
+    <%
+const randomVideos = allData
+  .filter(v => v._id.toString() !== oneData._id.toString())
+  .sort(() => Math.random() - 0.5);
+randomVideos.slice(0,10).forEach(video => {
+%>
+      <a href="/videos/<%= video.routeName %>" class="card-link">
+        <div class="card">
+          <div class="thumb">
+            <img src="<%= video.imageLink %>" alt="<%= video.title %>">
+            <% if(video.duration && video.duration !== '0') { %>
+              <div class="duration"><%= video.duration %></div>
+            <% } %>
+          </div>
+
+          <div class="content">
+            <h3><%= video.title %></h3>
+
+            
+
+            <div class="footer">
+              <span>👁 <%= video.totalView %> views</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    <% }) %>
+  </div>
+  <button id="loadMoreBtn" style="margin-top:20px; padding:10px 20px; background:#38bdf8; color:#020617; border:none; border-radius:8px; cursor:pointer;">More Videos</button>
+
+</div>
+
+<%- include('../partials/footer') %>
+
+<!-- Plyr JS -->
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+<script>
+  const player = new Plyr('#player', {
+    autoplay: false,
+    controls: [
+      'play-large','play','progress','current-time','mute','volume','settings','fullscreen'
+    ],
+    settings: ['speed'],
+    speed: { selected: 1, options: [0.5,0.75,1,1.25,1.5,2] }
+  });
+
+  // Load More functionality
+  const allVideos = <%- JSON.stringify(
+  allData
+    .filter(v => v._id.toString() !== oneData._id.toString())
+    .sort(() => Math.random() - 0.5)
+) %>;
+  let shown = 10;
+
+  const btn = document.getElementById('loadMoreBtn');
+  const container = document.getElementById('suggestedContainer');
+
+  btn.addEventListener('click', () => {
+    const nextVideos = allVideos.slice(shown, shown + 10);
+    nextVideos.forEach(video => {
+      const div = document.createElement('a');
+      div.href = `/videos/${video.routeName}`;
+      div.className = 'card-link';
+      div.innerHTML = `
+        <div class="card">
+          <div class="thumb">
+            <img src="${video.imageLink}" alt="${video.title}">
+            ${video.duration && video.duration !== '0' ? `<div class="duration">${video.duration}</div>` : ''}
+          </div>
+          <div class="content">
+            <h3>${video.title}</h3>
+            <div class="category">
+              ${video.category.map(cat => `<span>${cat.trim()}</span>`).join('')}
+            </div>
+            <div class="footer">
+              <span>👁 ${video.totalView} views</span>
+              <span>📅 ${new Date(video.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+    shown += 10;
+    if(shown >= allVideos.length) btn.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>

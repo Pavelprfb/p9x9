@@ -1,0 +1,36 @@
+# ================================
+# robots.txt for p9x9.com
+# Generated: 2026-02-01
+# Purpose: Control crawler access for SEO & Privacy
+# ================================
+
+User-agent: *
+
+# --- Block admin and backend routes ---
+Disallow: /admin
+Disallow: /admin/dashboard
+Disallow: /admin/add
+Disallow: /admin/update
+Disallow: /admin/update/
+Disallow: /admin/logout
+Disallow: /api/data-to-bd-p9x9
+
+# --- Block restricted data / API routes ---
+Disallow: /data/all
+Disallow: /data/videos/
+
+# --- Block sensitive query URLs ---
+Disallow: /*?
+
+# --- Optional: Prevent indexing of adult preview pages ---
+Disallow: /?adult=yes
+Disallow: /18plus
+Disallow: /login
+Disallow: /signup
+
+# --- Sitemap (if available) ---
+# Sitemap: https://p9x9.com/sitemap.xml
+
+# ================================
+# End of robots.txt
+# ================================

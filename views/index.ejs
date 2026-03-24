@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/css/index.css">
+<title><%= websiteName %></title>
+</head>
+<body>
+<%- include('partials/header') %>
+
+<div class="indexContainer">
+  <%- include('partials/searchForm') %>
+  <h1><%= websiteName %></h1>
+
+  <!-- Grid: AJAX will fill this -->
+  <div id="grid" class="grid"></div>
+
+  <!-- Pagination -->
+  <div class="pagination">
+    <button id="prev" disabled>Previous</button>
+    <button id="next">Next</button>
+  </div>
+
+  <style>
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      gap: 10px;
+    }
+    .pagination button {
+      padding: 8px 16px;
+      background: #4f46e5;
+      color: white;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+    .pagination button:disabled {
+      background: #a5b4fc;
+      cursor: not-allowed;
+    }
+    .pagination button:hover:not(:disabled) {
+      background: #3730a3;
+    }
+  </style>
+</div>
+
+<%- include('partials/footer') %>
+<%- include('partials/adultWarning') %>
+
+<script>
+let currentPage = 1;
+
+// Load page from server
+async function loadPage(page) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;">Loading...</p>';
+
+  const queryParam = "<%= query || '' %>";
+  const categoryParam = "<%= categories ? categories[0] : '' %>";
+  let url = `/api/posts?page=${page}`;
+  if(queryParam) url += `&q=${queryParam}`;
+  if(categoryParam) url += `&category=${categoryParam}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  let html = '';
+  data.forEach(item => {
+    html += `
+      <a href="/videos/${item.routeName}" class="card-link">
+        <div class="card">
+          <div class="thumb">
+            <img loading="lazy" src="${item.imageLink}" alt="${item.title}">
+            ${item.duration && item.duration !== '0' ? `<div class="duration">${item.duration}</div>` : ''}
+          </div>
+          <div class="content">
+            <h3>${item.title}</h3>
+            <div class="footer">
+              <span>👁 ${item.totalView} views</span>
+              <span>${item.formattedDate}</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    `;
+  });
+
+  grid.innerHTML = html;
+  document.getElementById("prev").disabled = (page === 1);
+}
+
+// Button click events
+document.getElementById("next").addEventListener("click", () => {
+  currentPage++;
+  loadPage(currentPage);
+});
+document.getElementById("prev").addEventListener("click", () => {
+  if(currentPage > 1){
+    currentPage--;
+    loadPage(currentPage);
+  }
+});
+
+// Initial load
+document.addEventListener("DOMContentLoaded", () => {
+  loadPage(currentPage);
+});
+</script>
+
+</body>
+</html>

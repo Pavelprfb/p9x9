@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Terms and Conditions - <%= siteName %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- SEO -->
+    <meta name="description" content="Official Terms and Conditions of <%= siteName %>. 18+ Adult Website.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://<%= url %>/terms">
+    
+    <!-- SEO -->
+    
+    <meta name="keywords" content="<%= keywords %>" />
+    <link rel="icon" href="<%= img %>"/>
+
+    
+    <!-- og tag -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Terms and Conditions - <%= siteName %>">
+    <meta property="og:url" content="<%= url %>/terms">
+    <meta property="og:image" content="<%= img %>">
+    <meta property="og:description" content="Official Terms and Conditions of <%= siteName %>. 18+ Adult Website." />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Terms and Conditions - <%= siteName %>">
+    <meta name="twitter:site" content="@<%= url %>/terms">
+    <meta name="twitter:description"  content="Official Terms and Conditions of <%= siteName %>. 18+ Adult Website.">
+    <meta name="twitter:image" content="<%= img %>">
+    <meta name="twitter:image:alt" content="Privacy and Policy">
+    <meta name="twitter:card" content="summary_large_image" />
+    
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #f1f1f1;
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+        }
+
+        header {
+            background: #111;
+            padding: 15px 20px;
+            border-bottom: 2px solid #ff0000;
+        }
+
+        header a {
+            color: #ff0000;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #111;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #222;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #ff0000;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #ff4d4d;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        a {
+            color: #ff0000;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #ff4d4d;
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+<%- include('header') %>
+
+<div class="container">
+    <div class="card">
+        <h1>Terms and Conditions</h1>
+        <p><strong>Last Updated:</strong> <%= lastUpdated %></p>
+        
+        <p>
+        Welcome to <strong><%= siteName %></strong>. These Terms and Conditions govern your use of this website.
+        By accessing, browsing, or using this platform, you acknowledge that you have read,
+        understood, and agreed to be legally bound by these terms.
+        If you do not agree, you must immediately discontinue use of the website.
+        </p>
+        
+        <h2>1. Age Restriction (18+ Only)</h2>
+        <p>
+        This website contains explicit adult material intended solely for individuals who are
+        at least 18 years of age (or the age of majority in their jurisdiction).
+        </p>
+        <ul>
+            <li>You confirm that you are 18 years of age or older.</li>
+            <li>You confirm that accessing adult material is legal in your country.</li>
+            <li>You agree not to permit any minor to access this website.</li>
+            <li>You understand that falsely declaring your age may violate applicable laws.</li>
+        </ul>
+        
+        <h2>2. Acceptance of Adult Content</h2>
+        <p>
+        By entering this website, you acknowledge that you may be exposed to adult-oriented,
+        sexually explicit material. You voluntarily choose to access such content and
+        accept full responsibility for your decision.
+        </p>
+        
+        <h2>3. User Responsibilities</h2>
+        <ul>
+            <li>You agree to use the website only for lawful purposes.</li>
+            <li>You will not upload, share, or distribute illegal or prohibited content.</li>
+            <li>You will not attempt to hack, disrupt, overload, or damage the platform.</li>
+            <li>You will not scrape, copy, reproduce, or redistribute website content without permission.</li>
+            <li>You are solely responsible for your actions while using the site.</li>
+        </ul>
+        
+        <h2>4. Prohibited Content</h2>
+        <p>The following content is strictly prohibited:</p>
+        <ul>
+            <li>Any content involving minors.</li>
+            <li>Non-consensual or exploitative material.</li>
+            <li>Violent or illegal sexual acts.</li>
+            <li>Content that violates copyright or intellectual property rights.</li>
+            <li>Content that promotes hate, abuse, or harassment.</li>
+        </ul>
+        
+        <h2>5. Intellectual Property Rights</h2>
+        <p>
+        All trademarks, branding, logos, design elements, and original content
+        displayed on <strong><%= siteName %></strong> are protected by intellectual property laws.
+        Unauthorized reproduction, redistribution, or commercial use is strictly prohibited.
+        </p>
+        
+        <h2>6. Third-Party Links</h2>
+        <p>
+        Our website may contain links to third-party websites.
+        We are not responsible for the content, privacy practices,
+        or policies of any external platforms.
+        Users access third-party sites at their own risk.
+        </p>
+        
+        <h2>7. Disclaimer of Warranties</h2>
+        <p>
+        All content and services on this website are provided "as is" and "as available"
+        without warranties of any kind, whether express or implied.
+        We do not guarantee uninterrupted access, error-free performance,
+        or the accuracy of user-generated content.
+        </p>
+        
+        <h2>8. Limitation of Liability</h2>
+        <p>
+        To the fullest extent permitted by law, <strong><%= siteName %></strong>
+        shall not be liable for any direct, indirect, incidental, consequential,
+        or special damages arising from the use or inability to use this website.
+        </p>
+        
+        <h2>9. Privacy</h2>
+        <p>
+        Your use of this website is also governed by our Privacy Policy.
+        By using the site, you consent to the collection and use of information
+        as described in our Privacy Policy.
+        </p>
+        
+        <h2>10. Termination</h2>
+        <p>
+        We reserve the right to suspend or terminate access to any user
+        who violates these Terms and Conditions without prior notice.
+        </p>
+        
+        <h2>11. Governing Law</h2>
+        <p>
+        These Terms shall be governed and interpreted in accordance with applicable laws.
+        Users are responsible for ensuring that accessing adult content
+        is legal within their own jurisdiction.
+        The website is operated from Bangladesh.
+        </p>
+        
+        <h2>12. Changes to Terms</h2>
+        <p>
+        We reserve the right to update, modify, or replace these Terms at any time.
+        Continued use of the website after changes are posted
+        constitutes acceptance of those changes.
+        </p>
+        
+        <h2>13. Contact Information</h2>
+        <p>
+        If you have any questions regarding these Terms and Conditions, please contact us:
+        </p>
+        <p>
+        Website: <a href="https://<%= siteDomain %>"><%= siteDomain %></a><br>
+        Email: <a href="mailto:<%= email %>"><%= email %></a>
+</p>
+    </div>
+</div>
+
+
+<%- include('footer') %>
+
+</body>
+</html>

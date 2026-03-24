@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Posts</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
+
+  <style>
+    body {
+      background: #121212;
+      color: #eaeaea;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 15px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* Search */
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 12px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      color: #fff;
+    }
+
+    .search-box button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      background: #03dac6;
+      color: #121212;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .card {
+      background: #1f1f1f;
+      padding: 20px;
+      border-radius: 14px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      border-bottom: 1px solid #333;
+    }
+
+    li:last-child {
+      border-bottom: none;
+    }
+
+    .actions a {
+      color: #03dac6;
+      text-decoration: none;
+      font-size: 14px;
+      display: inline-flex;
+      gap: 6px;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .pagination a {
+      padding: 8px 14px;
+      background: #181818;
+      border-radius: 8px;
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .pagination a.active {
+      background: #03dac6;
+      color: #121212;
+      font-weight: bold;
+    }
+
+    .add-btn {
+      display: inline-flex;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 12px 18px;
+      background: #03dac6;
+      color: #121212;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .search-box {
+        flex-direction: column;
+      }
+
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <h2>📄 All Posts</h2>
+
+  <!-- Search -->
+  <form method="GET" class="search-box">
+    <input
+      type="text"
+      name="q"
+      placeholder="Search posts..."
+      value="<%= query || '' %>"
+    >
+    <button type="submit">
+      <i class="fas fa-search"></i>
+    </button>
+  </form>
+
+  <div class="card">
+
+    <% if(posts.length === 0){ %>
+      <p style="text-align:center;color:#aaa;">No data found</p>
+    <% } %>
+
+    <ul>
+      <% posts.forEach(post => { %>
+        <li>
+          <b><%= post.title %></b>
+          <div class="actions">
+            <a href="/admin/update/<%= post._id %>">
+              <i class="fas fa-pen"></i> Edit
+            </a>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+
+  </div>
+
+  <!-- Pagination -->
+  <% if(totalPages > 1){ %>
+    <div class="pagination">
+      <% for(let i = 1; i <= totalPages; i++){ %>
+        <a
+          href="?page=<%= i %><%= query ? '&q=' + query : '' %>"
+          class="<%= i === currentPage ? 'active' : '' %>"
+        >
+          <%= i %>
+        </a>
+      <% } %>
+    </div>
+  <% } %>
+
+  <a href="/admin/add" class="add-btn">
+    <i class="fas fa-plus"></i> Add New
+  </a>
+
+</div>
+</body>
+</html>

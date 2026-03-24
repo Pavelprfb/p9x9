@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P9X9 to Links.P9X9</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body { 
+    font-family: 'Segoe UI', sans-serif; 
+    background: #f5f5f5; 
+    padding: 20px; 
+}
+form { 
+    background: #fff; 
+    padding: 20px; 
+    margin-bottom: 30px; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    position: relative; 
+}
+.input-group { 
+    margin-bottom: 15px; 
+    display: flex; 
+    align-items: center; 
+}
+.input-group i { 
+    margin-right: 10px; 
+    color: #555; 
+    min-width: 20px; 
+    text-align: center; 
+}
+input, textarea { 
+    flex: 1; 
+    padding: 10px; 
+    border-radius: 5px; 
+    border: 1px solid #ccc; 
+    font-size: 1rem; 
+}
+textarea { 
+    resize: vertical; 
+    min-height: 60px; 
+}
+button { 
+    padding: 10px 20px; 
+    background: #007bff; 
+    color: #fff; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    margin-right: 10px; 
+}
+button i { 
+    margin-right: 5px; 
+}
+button:hover { 
+    background: #0056b3; 
+}
+.hide-btn { 
+    background: #dc3545; 
+}
+.hide-btn:hover { 
+    background: #a71d2a; 
+}
+</style>
+
+</head>
+<body>
+
+<div id="forms-container"></div>
+
+<script>
+// ===== Cookie functions =====
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    document.cookie = name + "=" + value + ";path=/;expires=" + d.toUTCString();
+}
+
+// ===== Previously hidden forms =====
+let hiddenForms = getCookie('hiddenForms');
+hiddenForms = hiddenForms ? JSON.parse(hiddenForms) : [];
+
+// ===== Server Data =====
+const myAllData = <%- JSON.stringify(myAllData) %>;
+const container = document.getElementById('forms-container');
+
+myAllData.forEach(data => {
+    if(hiddenForms.includes(data.routeName)) return;
+
+    const form = document.createElement('form');
+    form.method = "POST";
+    form.action = "https://links.p9x9.com/create"; // Normal POST to server
+    form.innerHTML = `
+        <div class="input-group"><i class="fa-solid fa-link"></i><input value="${data.routeName || ''}" name="routeName" placeholder="Route Name" required></div>
+        <div class="input-group"><i class="fa-solid fa-heading"></i><input value="${data.title || ''}" name="title" placeholder="Title"></div>
+        <div class="input-group"><i class="fa-solid fa-align-left"></i><textarea name="description" placeholder="Description">${data.description || ''}</textarea></div>
+        <div class="input-group"><i class="fa-solid fa-file-lines"></i><input value="${data.shortDescription || ''}" name="shortDescription" placeholder="Short Description"></div>
+        <div class="input-group"><i class="fa-solid fa-image"></i><input value="${data.imageLink || ''}" name="imageLink" placeholder="Image Link"></div>
+        <div class="input-group"><i class="fa-solid fa-video"></i><input value="${data.videoLink || ''}" name="videoLink" placeholder="Video Link"></div>
+        <div class="input-group"><i class="fa-solid fa-eye"></i><input value="0" name="totalView" type="number" placeholder="Total View"></div>
+        <div class="input-group"><i class="fa-solid fa-clock"></i><input value="${data.duration || ''}" name="duration" placeholder="Duration"></div>
+        <div class="input-group"><i class="fa-solid fa-tags"></i><input value="${data.category || ''}" name="category" placeholder="category1,category2"></div>
+
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i> Publish Post</button>
+        <button type="button" class="hide-btn">Hide Data</button>
+    `;
+
+    // ===== Auto-select text on first focus =====
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => input.select());
+        // Mobile & double click support
+        input.addEventListener('mouseup', e => e.preventDefault());
+    });
+
+    // ===== Hide button =====
+    const hideBtn = form.querySelector('.hide-btn');
+    hideBtn.addEventListener('click', () => {
+        form.remove();
+        hiddenForms.push(data.routeName);
+        setCookie('hiddenForms', JSON.stringify(hiddenForms), 365);
+    });
+
+    container.appendChild(form);
+});
+</script>
+
+</body>
+</html>

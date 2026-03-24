@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/index.css">
+
+  <title>All Videos</title>
+  
+</head>
+<body>
+
+<%- include('partials/header') %>
+<div class="indexContainer">
+  
+<!-- Include Search Form -->
+<%- include('partials/searchForm') %>
+
+<div class="grid">
+  <% if(allData.length === 0){ %>
+    <div style="grid-column:1/-1; text-align:center; color:#f87171; padding:20px;">No videos found.</div>
+  <% } %>
+
+  <% allData.forEach(item => { %>
+    <a href="/videos/<%= item.routeName %>" class="card-link">
+      <div class="card">
+
+        <div class="thumb">
+          <img src="<%= item.imageLink %>" alt="<%= item.title %>">
+          <% if (item.duration && item.duration !== '0') { %>
+            <div class="duration"><%= item.duration %></div>
+          <% } %>
+        </div>
+
+        <div class="content">
+          <h3><%= item.title %></h3>
+
+          <div class="category">
+            <% item.category.forEach(cat => { %>
+              <span><%= cat.trim() %></span>
+            <% }) %>
+          </div>
+
+          <div class="footer">
+            <span>👁 <%= item.totalView %> views</span>
+            <span><%= new Date(item.createdAt).toLocaleDateString() %></span>
+          </div>
+        </div>
+
+      </div>
+    </a>
+  <% }) %>
+</div>
+
+</div>
+<%- include('partials/footer') %>
+<%- include('partials/adultWarning') %>
+</body>
+</html>

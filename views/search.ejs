@@ -1,0 +1,165 @@
+
+  <style>
+    body {
+      background: #0f172a;
+      font-family: Arial, sans-serif;
+      color: #e5e7eb;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    /* ================= SEARCH BAR ================= */
+    .search-bar {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .search-bar input {
+      width: 300px;
+      padding: 10px 15px;
+      border-radius: 8px 0 0 8px;
+      border: none;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-bar button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 0 8px 8px 0;
+      background: #38bdf8;
+      color: #020617;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .search-bar button:hover {
+      background: #0ea5e9;
+    }
+
+    /* ================= VIDEO GRID ================= */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,.4);
+      transition: .2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.6);
+    }
+
+    .thumb {
+      position: relative;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+    }
+
+    .duration {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0,0,0,.75);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .content {
+      padding: 15px;
+    }
+
+    .content h3 {
+      margin: 0 0 6px;
+      font-size: 17px;
+      color: #38bdf8;
+    }
+
+    .route {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+
+    .category span {
+      display: inline-block;
+      background: #1e293b;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin: 3px 4px 0 0;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-top: 12px;
+      color: #9ca3af;
+    }
+  </style>
+
+<h1>🎬 Search Videos</h1>
+
+<!-- SEARCH FORM -->
+<form class="search-bar" action="/data/all" method="GET">
+  <input type="text" name="q" placeholder="Search by title..." value="<%= query || '' %>">
+  <button type="submit">Search</button>
+</form>
+
+<div class="grid">
+  <% if (allData.length === 0) { %>
+    <p style="grid-column: 1/-1; text-align: center; color: #f87171;">No videos found.</p>
+  <% } %>
+
+  <% allData.forEach(item => { %>
+    <a href="/videos/<%= item.routeName %>" class="card-link">
+      <div class="card">
+        <div class="thumb">
+          <img src="<%= item.imageLink %>" alt="<%= item.title %>">
+          <% if (item.duration && item.duration !== '0') { %>
+            <div class="duration"><%= item.duration %></div>
+          <% } %>
+        </div>
+        <div class="content">
+          <h3><%= item.title %></h3>
+          <div class="route">/videos/<%= item.routeName %></div>
+          <div class="category">
+            <% item.category.forEach(cat => { %>
+              <span><%= cat.trim() %></span>
+            <% }) %>
+          </div>
+          <div class="footer">
+            <span>👁 <%= item.totalView %> views</span>
+            <span><%= new Date(item.createdAt).toLocaleDateString() %></span>
+          </div>
+        </div>
+      </div>
+    </a>
+  <% }) %>
+</div>

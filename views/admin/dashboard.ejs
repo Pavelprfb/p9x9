@@ -1,0 +1,152 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <title>Admin Dashboard</title>  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  
+  <!-- Font Awesome -->  
+  <link  
+    rel="stylesheet"  
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"  
+  />  
+  
+  <style>  
+    body {  
+      background: #121212;  
+      color: #eaeaea;  
+      font-family: 'Segoe UI', Tahoma, sans-serif;  
+      margin: 0;  
+      padding: 0;  
+      min-height: 100vh;  
+      display: flex;  
+      align-items: center;  
+      justify-content: center;  
+    }  
+  
+    .container {  
+      width: 100%;  
+      max-width: 420px;  
+      padding: 20px;  
+    }  
+  
+    .card {  
+      background: #1f1f1f;  
+      padding: 25px;  
+      border-radius: 16px;  
+      box-shadow: 0 10px 35px rgba(0,0,0,0.7);  
+      text-align: center;  
+    }  
+  
+    h2 {  
+      margin-bottom: 20px;  
+    }  
+  
+    ul {  
+      list-style: none;  
+      padding: 0;  
+      margin: 0;  
+    }  
+  
+    li {  
+      margin-bottom: 12px;  
+    }  
+  
+    a {  
+      display: flex;  
+      align-items: center;  
+      justify-content: center;  
+      gap: 10px;  
+      padding: 12px;  
+      background: #111;  
+      border: 1px solid #333;  
+      border-radius: 12px;  
+      color: #eaeaea;  
+      text-decoration: none;  
+      font-size: 15px;  
+      font-weight: 600;  
+      transition: 0.2s;  
+    }  
+  
+    a:hover {  
+      background: #03dac6;  
+      color: #121212;  
+      transform: scale(1.04);  
+    }  
+  
+    a.logout {  
+      background: #2a0000;  
+      border-color: #ff4d4d;  
+      color: #ff6b6b;  
+    }  
+  
+    a.logout:hover {  
+      background: #ff4d4d;  
+      color: #121212;  
+    }  
+  
+    @media (max-width: 480px) {  
+      .card {  
+        padding: 20px;  
+      }  
+    }  
+  </style>  
+</head>  
+  
+<body>  
+  
+  <div class="container">  
+    <div class="card">  
+  
+      <h2>👋 Welcome, <%= admin.username %></h2>  
+  
+      <ul>  
+        <li>  
+          <a href="/admin/dashboard">  
+            <i class="fas fa-chart-line"></i> Dashboard  
+          </a>  
+        </li>  
+  
+        <li>  
+          <a href="/admin/add">  
+            <i class="fas fa-plus-circle"></i> Add  
+          </a>  
+        </li>  
+  
+        <li>  
+          <a href="/admin/update">  
+            <i class="fas fa-pen-to-square"></i> Update  
+          </a>  
+        </li>  
+
+        <li>  
+          <a href="/api/data-to-bd-p9x9">  
+            <i class="fas fa-database"></i> Data To BD P9X9  
+          </a>  
+        </li>  
+
+        <li>  
+          <a href="/admin/delete">  
+            <i class="fas fa-trash-alt"></i> Delete  
+          </a>  
+        </li>  
+        
+        <li>  
+          <a href="/admin/p9x9-to-links_p9x9">  
+            <i class="fas fa-trash-alt"></i> P9X9 to Links.P9X9    
+          </a>  
+        </li>  
+  
+        <li>  
+          <a href="/admin/logout" class="logout">  
+            <i class="fas fa-right-from-bracket"></i> Logout  
+          </a>  
+        </li>  
+  
+      </ul>  
+  
+    </div>  
+  </div>  
+  
+</body>  
+</html>

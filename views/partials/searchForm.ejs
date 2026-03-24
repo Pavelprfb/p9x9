@@ -1,0 +1,104 @@
+<div id="searchFormContainer" style="margin-bottom: 20px;">
+  <form id="searchForm" style="display: flex; gap: 10px; margin-bottom: 10px;">
+    <input type="text" id="searchInput" placeholder="Search Video..." style="flex:1; padding:5px; border-radius:5px; border:none;"/>
+    <button type="submit" style="padding:5px 10px; border-radius:5px; border:none; background:#38bdf8; color:#000; cursor:pointer;">Search</button>
+  </form>
+
+  <div id="categoryContainer" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+</div>
+
+<script>
+  async function initSearchForm() {
+    // সব ডাটা fetch করা
+    const res = await fetch('/data/all');
+    const data = await res.json();
+
+    // categories বের করা
+    const categories = [...new Set(data.flatMap(d => d.category.map(c => c.trim())))];
+    const categoryContainer = document.getElementById('categoryContainer');
+    const maxVisible = 3;
+
+    function renderCategories(showAll = false) {
+      categoryContainer.innerHTML = '';
+      const catsToShow = showAll ? categories : categories.slice(0, maxVisible);
+
+      catsToShow.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.textContent = cat;
+        btn.style.padding = '4px 8px';
+        btn.style.borderRadius = '6px';
+        btn.style.border = 'none';
+        btn.style.background = '#1e293b';
+        btn.style.color = '#e5e7eb';
+        btn.style.cursor = 'pointer';
+        btn.addEventListener('click', () => filterByCategory(cat));
+        categoryContainer.appendChild(btn);
+      });
+
+      if (!showAll && categories.length > maxVisible) {
+        const moreBtn = document.createElement('button');
+        moreBtn.textContent = 'More';
+        moreBtn.style.padding = '4px 8px';
+        moreBtn.style.borderRadius = '6px';
+        moreBtn.style.border = 'none';
+        moreBtn.style.background = '#64748b';
+        moreBtn.style.color = '#e5e7eb';
+        moreBtn.style.cursor = 'pointer';
+        moreBtn.addEventListener('click', () => renderCategories(true));
+        categoryContainer.appendChild(moreBtn);
+      }
+    }
+
+    renderCategories();
+
+    // Search submit
+    const searchForm = document.getElementById('searchForm');
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = data.filter(d => d.title.toLowerCase().includes(query));
+      renderCards(filtered);
+    });
+
+    // category filter
+    function filterByCategory(cat) {
+      const filtered = data.filter(d => d.category.map(c=>c.trim()).includes(cat));
+      renderCards(filtered);
+    }
+
+    // render cards
+    function renderCards(cardsData) {
+      const grid = document.querySelector('.grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      cardsData.forEach(item => {
+        const a = document.createElement('a');
+        a.href = `/videos/${item.routeName}`;
+        a.className = 'card-link';
+        a.innerHTML = `
+          <div class="card">
+            <div class="thumb">
+              <img src="${item.imageLink}" alt="${item.title}">
+              ${item.duration && item.duration !== '0' ? `<div class="duration">${item.duration}</div>` : ''}
+            </div>
+            <div class="content">
+              <h3>${item.title}</h3>
+              <div class="route">/videos/${item.routeName}</div>
+              <div class="category">
+                ${item.category.map(c=>`<span>${c.trim()}</span>`).join('')}
+              </div>
+              <div class="footer">
+                <span>👁 ${item.totalView} views</span>
+                <span>${new Date(item.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        grid.appendChild(a);
+      });
+    }
+  }
+
+  initSearchForm();
+</script>

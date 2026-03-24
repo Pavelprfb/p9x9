@@ -1,0 +1,171 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>All Data Forms</title>  
+
+  <style>  
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {  
+      background: linear-gradient(135deg, #141e30, #243b55);
+      padding: 20px;  
+      color: #fff;
+    }  
+  
+    h1 {  
+      text-align: center;  
+      margin-bottom: 30px;  
+      font-weight: 600;
+    }  
+  
+    .cards-container {  
+      display: grid;  
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));  
+      gap: 25px;  
+    }  
+  
+    .data-card {  
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 15px;  
+      padding: 15px;  
+      transition: 0.3s ease;  
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }  
+  
+    .data-card:hover {  
+      transform: translateY(-6px);  
+    }  
+
+    .data-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 12px;
+    }
+  
+    .data-card input {  
+      width: 100%;  
+      padding: 8px;  
+      margin: 6px 0;  
+      border: none;
+      border-radius: 6px;  
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 13px;
+    }  
+
+    .data-card input:focus {
+      outline: none;
+      border: 1px solid #00c6ff;
+    }
+  
+    .data-card button {  
+      padding: 10px;  
+      width: 100%;  
+      border: none;  
+      border-radius: 8px;  
+      cursor: pointer;  
+      font-size: 14px;  
+      margin-top: 6px;  
+      font-weight: 600;
+      transition: 0.3s;
+    }  
+  
+    .data-card button[type="submit"] {
+      background: linear-gradient(45deg, #00c6ff, #0072ff);
+      color: #fff;
+    }
+
+    .data-card button[type="submit"]:hover {
+      transform: scale(1.03);
+      box-shadow: 0 5px 15px rgba(0,114,255,0.4);
+    }
+
+    .hide-btn {  
+      background: linear-gradient(45deg, #ff416c, #ff4b2b);
+      color: #fff;
+    }
+
+    .hide-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 5px 15px rgba(255,75,43,0.4);
+    }
+
+    @media (max-width: 500px) {
+      .cards-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>  
+</head>  
+
+<body>  
+
+  <h1>All Data Entries</h1>  
+
+  <div class="cards-container">  
+
+    <% allData.forEach((data) => { %>  
+
+      <form class="data-card" id="card-<%= data.id %>"  
+        action="https://movieb-f42x.onrender.com/add/p9x9-signle-data"  
+        method="post" accept-charset="utf-8">  
+
+        <img src="<%= data.imageLink %>" alt="<%= data.title %>"/>  
+
+        <input value="<%= data.routeName %>" type="text" name="id" readonly>  
+        <input value="<%= data.title %>" type="text" name="hadding" readonly>  
+        <input value="<%= data.imageLink %>" type="text" name="img" readonly>  
+        <input value="<%= data.videoLink %>" type="text" name="play" readonly>  
+
+        <button type="submit">Submit</button>  
+        <button type="button" class="hide-btn" onclick="hideData('<%= data.id %>')">
+          Hide
+        </button>  
+
+      </form>  
+
+    <% }); %>  
+
+  </div>  
+
+<script>
+// Set cookie to hide card
+function hideData(id) {
+  let card = document.getElementById("card-" + id);
+  if (card) card.style.display = "none";
+
+  let d = new Date();
+  d.setTime(d.getTime() + (365*24*60*60*1000));
+  document.cookie = `hide_${id}=true; expires=${d.toUTCString()}; path=/`;
+}
+
+function getCookie(name) {
+  let value = "; " + document.cookie;
+  let parts = value.split("; " + name + "=");
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
+
+window.onload = function() {
+  <% allData.forEach((data) => { %>
+    if(getCookie("hide_<%= data.id %>") === "true") {
+      let card = document.getElementById("card-<%= data.id %>");
+      if(card) card.style.display = "none";
+    }
+  <% }) %>
+}
+</script>
+
+</body>  
+</html>
