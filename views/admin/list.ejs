@@ -90,30 +90,6 @@
       gap: 6px;
     }
 
-    /* Pagination */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 20px;
-      flex-wrap: wrap;
-    }
-
-    .pagination a {
-      padding: 8px 14px;
-      background: #181818;
-      border-radius: 8px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    .pagination a.active {
-      background: #03dac6;
-      color: #121212;
-      font-weight: bold;
-    }
-
     .add-btn {
       display: inline-flex;
       gap: 8px;
@@ -146,17 +122,16 @@
   <h2>📄 All Posts</h2>
 
   <!-- Search -->
-  <form method="GET" class="search-box">
+  <div class="search-box">
     <input
       type="text"
-      name="q"
+      id="searchInput"
       placeholder="Search posts..."
-      value="<%= query || '' %>"
     >
-    <button type="submit">
+    <button onclick="document.getElementById('searchInput').focus();">
       <i class="fas fa-search"></i>
     </button>
-  </form>
+  </div>
 
   <div class="card">
 
@@ -164,10 +139,10 @@
       <p style="text-align:center;color:#aaa;">No data found</p>
     <% } %>
 
-    <ul>
+    <ul id="postsList">
       <% posts.forEach(post => { %>
         <li>
-          <b><%= post.title %></b>
+          <b class="post-title"><%= post.title %></b>
           <div class="actions">
             <a href="/admin/update/<%= post._id %>">
               <i class="fas fa-pen"></i> Edit
@@ -179,24 +154,27 @@
 
   </div>
 
-  <!-- Pagination -->
-  <% if(totalPages > 1){ %>
-    <div class="pagination">
-      <% for(let i = 1; i <= totalPages; i++){ %>
-        <a
-          href="?page=<%= i %><%= query ? '&q=' + query : '' %>"
-          class="<%= i === currentPage ? 'active' : '' %>"
-        >
-          <%= i %>
-        </a>
-      <% } %>
-    </div>
-  <% } %>
-
   <a href="/admin/add" class="add-btn">
     <i class="fas fa-plus"></i> Add New
   </a>
 
 </div>
+
+<script>
+  const searchInput = document.getElementById('searchInput');
+  const postsList = document.getElementById('postsList');
+  const posts = Array.from(postsList.getElementsByTagName('li'));
+  searchInput.addEventListener('focus', ()=>{
+    searchInput.select()
+  })
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    posts.forEach(li => {
+      const title = li.querySelector('.post-title').textContent.toLowerCase();
+      li.style.display = title.includes(query) ? 'flex' : 'none';
+    });
+  });
+</script>
+
 </body>
 </html>

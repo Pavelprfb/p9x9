@@ -43,8 +43,7 @@ exports.listPage = async (req, res) => {
     const totalPages = Math.ceil(totalPosts / limit);
 
     const posts = await Post.find(filter)
-      .skip(skip)
-      .limit(limit)
+      
       .sort({ _id: -1 });
 
     res.render('admin/list', {
