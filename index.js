@@ -153,6 +153,9 @@ app.get('/privacy', (req, res) => {
 app.get('/sitemap.xml', sitemapController.generateSitemap);
 app.get('/sitemap2.xml', videoSitemapController.generateVideoSitemap);
 
+app.get('/navercad851d9bfc5ef6a1f2030130b4ba786.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'navercad851d9bfc5ef6a1f2030130b4ba786.html'));
+});
 // Start server
 app.listen(process.env.PORT, '0.0.0.0', () => {
   console.log(`Server running on ${process.env.PORT}`);
