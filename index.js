@@ -66,7 +66,7 @@ app.get("/", async (req, res) => {
       // ✅ latest 5 (FIXED)
       const latestFive = await Post.find({})
         .sort({ _id: -1 }) // 🔥 createdAt issue fix
-        .limit(5)
+        .limit(10)
         .lean();
 
       // ✅ random rest (optimized)
