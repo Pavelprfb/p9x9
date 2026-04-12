@@ -39,34 +39,69 @@ app.get("/", async (req, res) => {
   try {
     const query = req.query.q;
     const categoryQuery = req.query.category;
+
     const limit = 20;
-    const page = 1; // first load
+    const page = 1;
 
     let allData = [];
 
     if (query) {
-      const regex = new RegExp(query, "i");
-      allData = await Post.find({ title: { $regex: regex } }).limit(limit).lean();
+      // ✅ safe regex
+      const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeQuery, "i");
+
+      allData = await Post.find({ title: { $regex: regex } })
+        .sort({ _id: -1 }) // 🔥 newest first fix
+        .limit(limit)
+        .lean();
+
     } else if (categoryQuery) {
-      allData = await Post.find({ category: categoryQuery }).limit(limit).lean();
+
+      allData = await Post.find({ category: categoryQuery })
+        .sort({ _id: -1 }) // 🔥 newest first fix
+        .limit(limit)
+        .lean();
+
     } else {
-      // latestFive + random rest
-      const latestFive = await Post.find({}).sort({ createdAt: -1 }).limit(5).lean();
+      // ✅ latest 5 (FIXED)
+      const latestFive = await Post.find({})
+        .sort({ _id: -1 }) // 🔥 createdAt issue fix
+        .limit(5)
+        .lean();
+
+      // ✅ random rest (optimized)
       const restData = await Post.aggregate([
-        { $match: { _id: { $nin: latestFive.map(d => d._id) } } },
+        {
+          $match: {
+            _id: { $nin: latestFive.map(d => d._id) }
+          }
+        },
         { $sample: { size: limit } }
       ]);
 
-      allData = [...latestFive, ...restData];
+      // ✅ merge + limit
+      allData = [...latestFive, ...restData].slice(0, limit);
     }
 
-    // Add formattedDate
-    allData.forEach(p => p.formattedDate = new Date(p.createdAt).toLocaleDateString());
+    // ✅ safe date format
+    allData.forEach(p => {
+      if (p.createdAt) {
+        p.formattedDate = new Date(p.createdAt).toLocaleDateString();
+      } else {
+        p.formattedDate = "";
+      }
+    });
 
-    const categoriesRaw = await Post.find({}, { category: 1 }).lean();
-    const categories = categoriesRaw.map(d => d.category);
+    // ✅ category optimize (no duplicate)
+    const categories = await Post.distinct("category");
 
-    res.render("index", { allData, author: "YourSiteAuthor", query, categories });
+    res.render("index", {
+      allData,
+      author: "P9X9",
+      query,
+      categories
+    });
+
   } catch (err) {
     console.error(err);
     res.status(500).send("Server Error");
@@ -152,6 +187,13 @@ app.get('/privacy', (req, res) => {
 // Example usage: /sitemap.xml?page=1
 app.get('/sitemap.xml', sitemapController.generateSitemap);
 app.get('/sitemap2.xml', videoSitemapController.generateVideoSitemap);
+
+
+// 404 page
+app.use((req, res) => {
+  res.status(404).render("404");
+});
+
 // Start server
 app.listen(process.env.PORT, '0.0.0.0', () => {
   console.log(`Server running on ${process.env.PORT}`);

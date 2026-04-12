@@ -2,33 +2,77 @@ const Post = require('../models/Post');
 
 // All videos route
 exports.dataRoute = async (req, res) => {
-  const query = req.query.q;
-  const categoryQuery = req.query.category;
-  let allData = [];
+  
+  try {
+    const query = req.query.q;
+    const categoryQuery = req.query.category;
 
-  if(query) {
-    const regex = new RegExp(query, 'i');
-    allData = await Post.find({ title: { $regex: regex } });
-  } else if(categoryQuery) {
-    allData = await Post.find({ category: categoryQuery });
-  } else {
-    // নতুন 5টি উপরের দিকে
-    const latestFive = await Post.find({}).sort({ createdAt: -1 }).limit(5);
+    const limit = 20;
+    const page = 1;
 
-    // বাকি ডাটা থেকে রেনডম সিলেক্ট
-    const restData = await Post.find({ _id: { $nin: latestFive.map(d => d._id) } });
-    
-    // রেনডম অর্ডারিং
-    restData.sort(() => Math.random() - 0.5);
+    let allData = [];
 
-    // মিলিয়ে দিচ্ছি
-    allData = [...latestFive, ...restData];
+    if (query) {
+      // ✅ safe regex
+      const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(safeQuery, "i");
+
+      allData = await Post.find({ title: { $regex: regex } })
+        .sort({ _id: -1 }) // 🔥 newest first fix
+        .limit(limit)
+        .lean();
+
+    } else if (categoryQuery) {
+
+      allData = await Post.find({ category: categoryQuery })
+        .sort({ _id: -1 }) // 🔥 newest first fix
+        .limit(limit)
+        .lean();
+
+    } else {
+      // ✅ latest 5 (FIXED)
+      const latestFive = await Post.find({})
+        .sort({ _id: -1 }) // 🔥 createdAt issue fix
+        .limit(5)
+        .lean();
+
+      // ✅ random rest (optimized)
+      const restData = await Post.aggregate([
+        {
+          $match: {
+            _id: { $nin: latestFive.map(d => d._id) }
+          }
+        },
+        { $sample: { size: limit } }
+      ]);
+
+      // ✅ merge + limit
+      allData = [...latestFive, ...restData].slice(0, limit);
+    }
+
+    // ✅ safe date format
+    allData.forEach(p => {
+      if (p.createdAt) {
+        p.formattedDate = new Date(p.createdAt).toLocaleDateString();
+      } else {
+        p.formattedDate = "";
+      }
+    });
+
+    // ✅ category optimize (no duplicate)
+    const categories = await Post.distinct("category");
+
+    res.render("index", {
+      allData,
+      author: "P9X9",
+      query,
+      categories
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server Error");
   }
-
-  // সব ক্যাটেগরি
-  const categories = (await Post.find({}, { category: 1 })).map(d => d.category);
-
-  res.render('index2', { allData, author, query, categories });
 };
 
 // Single video route with totalView + cookie logic
