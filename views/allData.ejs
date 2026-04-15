@@ -273,12 +273,43 @@ method="post">
 <div id="toast"></div>
 
 <script>
+
+// toast
 function showToast(msg){
   const toast=document.getElementById("toast");
   toast.innerText=msg;
   toast.style.opacity="1";
   setTimeout(()=>toast.style.opacity="0",2000);
 }
+
+/* =========================
+   COOKIE SYSTEM (ADDED)
+========================= */
+
+function setCookie(name, value, days){
+  const d = new Date();
+  d.setTime(d.getTime() + (days*24*60*60*1000));
+  document.cookie = name + "=" + JSON.stringify(value) + ";expires=" + d.toUTCString() + ";path=/";
+}
+
+function getCookie(name){
+  const cookies = document.cookie.split("; ");
+  for(let i=0;i<cookies.length;i++){
+    const [key,val] = cookies[i].split("=");
+    if(key === name){
+      try { return JSON.parse(val); }
+      catch(e){ return val; }
+    }
+  }
+  return null;
+}
+
+// load hidden list
+let hiddenForms = getCookie("hiddenForms") || [];
+
+/* =========================
+   COPY / PASTE / CLEAR
+========================= */
 
 function copyInput(btn){
   const input=btn.closest(".input-group").querySelector("input");
@@ -302,10 +333,33 @@ function clearInput(btn){
   showToast("Cleared");
 }
 
+/* =========================
+   HIDE SYSTEM (COOKIE SAVE)
+========================= */
+
 function hideData(id){
   let card=document.getElementById("card-"+id);
   if(card) card.style.display="none";
+
+  if(!hiddenForms.includes(id)){
+    hiddenForms.push(id);
+    setCookie("hiddenForms", hiddenForms, 365);
+  }
+
+  showToast("Hidden Saved");
 }
+
+/* =========================
+   APPLY HIDDEN ON LOAD
+========================= */
+
+window.onload = function(){
+  hiddenForms.forEach(id=>{
+    let card=document.getElementById("card-"+id);
+    if(card) card.style.display="none";
+  });
+};
+
 </script>
 
 </body>
