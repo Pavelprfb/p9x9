@@ -184,12 +184,16 @@ input:focus{
     flex-direction:column;
   }
 }
+h2{
+  text-align: center;
+  margin: 10px;
+}
 </style>
 </head>
 
 <body>
 
-<h1>All Data Entries</h1>
+<h2>Data To Desi.P9X9</h2>
 
 <div class="cards-container">
 
@@ -208,77 +212,70 @@ method="post">
   </a>
 </div>
 
+<!-- Route -->
 <div class="input-group">
+  <div style="width:100%; font-size:13px; margin-bottom:4px; color:#ccc;">
+    Route Name
+  </div>
   <div class="input-box">
     <i class="fa fa-link"></i>
     <input name="id" value="<%= data.routeName %>">
   </div>
   <div class="actions">
-    <button type="button" class="copy-btn" onclick="copyInput(this)">
-      <i class="fa fa-copy"></i>
-    </button>
-    <button type="button" class="paste-btn" onclick="pasteInput(this)">
-      <i class="fa fa-paste"></i>
-    </button>
-    <button type="button" class="clear-btn" onclick="clearInput(this)">
-      <i class="fa fa-trash"></i>
-    </button>
+    <button type="button" class="copy-btn" onclick="copyInput(this)">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput(this)">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput(this)">Clear</button>
   </div>
 </div>
 
+<!-- Title -->
 <div class="input-group">
+  <div style="width:100%; font-size:13px; margin-bottom:4px; color:#ccc;">
+    Title
+  </div>
   <div class="input-box">
     <i class="fa fa-heading"></i>
     <input name="hadding" value="<%= data.title %>">
   </div>
   <div class="actions">
-    <button type="button" class="copy-btn" onclick="copyInput(this)">
-      <i class="fa fa-copy"></i>
-    </button>
-    <button type="button" class="paste-btn" onclick="pasteInput(this)">
-      <i class="fa fa-paste"></i>
-    </button>
-    <button type="button" class="clear-btn" onclick="clearInput(this)">
-      <i class="fa fa-trash"></i>
-    </button>
+    <button type="button" class="copy-btn" onclick="copyInput(this)">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput(this)">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput(this)">Clear</button>
   </div>
 </div>
 
+<!-- Image -->
 <div class="input-group">
+  <div style="width:100%; font-size:13px; margin-bottom:4px; color:#ccc;">
+    Image Link
+  </div>
   <div class="input-box">
     <i class="fa fa-image"></i>
     <input name="img" value="<%= data.imageLink %>">
   </div>
   <div class="actions">
-    <button type="button" class="copy-btn" onclick="copyInput(this)">
-      <i class="fa fa-copy"></i>
-    </button>
-    <button type="button" class="paste-btn" onclick="pasteInput(this)">
-      <i class="fa fa-paste"></i>
-    </button>
-    <button type="button" class="clear-btn" onclick="clearInput(this)">
-      <i class="fa fa-trash"></i>
-    </button>
+    <button type="button" class="copy-btn" onclick="copyInput(this)">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput(this)">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput(this)">Clear</button>
   </div>
 </div>
 
+<!-- Video -->
 <div class="input-group">
+  <div style="width:100%; font-size:13px; margin-bottom:4px; color:#ccc;">
+    Video Link
+  </div>
   <div class="input-box">
     <i class="fa fa-video"></i>
     <input name="play" value="<%= data.videoLink %>">
   </div>
   <div class="actions">
-    <button type="button" class="copy-btn" onclick="copyInput(this)">
-      <i class="fa fa-copy"></i>
-    </button>
-    <button type="button" class="paste-btn" onclick="pasteInput(this)">
-      <i class="fa fa-paste"></i>
-    </button>
-    <button type="button" class="clear-btn" onclick="clearInput(this)">
-      <i class="fa fa-trash"></i>
-    </button>
+    <button type="button" class="copy-btn" onclick="copyInput(this)">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput(this)">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput(this)">Clear</button>
   </div>
 </div>
+
 
 <button class="submit-btn" type="submit">Submit</button>
 
