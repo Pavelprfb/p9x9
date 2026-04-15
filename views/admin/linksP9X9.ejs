@@ -5,134 +5,261 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>P9X9 to Links.P9X9</title>
 
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-body { 
-    font-family: 'Segoe UI', sans-serif; 
-    background: #f5f5f5; 
-    padding: 20px; 
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
 }
-form { 
-    background: #fff; 
-    padding: 20px; 
-    margin-bottom: 30px; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
-    position: relative; 
+
+body{
+  background: linear-gradient(135deg, #141e30, #243b55);
+  color:#fff;
+  padding:20px;
 }
-.input-group { 
-    margin-bottom: 15px; 
-    display: flex; 
-    align-items: center; 
+
+/* container */
+#forms-container{
+  max-width:900px;
+  margin:0 auto;
 }
-.input-group i { 
-    margin-right: 10px; 
-    color: #555; 
-    min-width: 20px; 
-    text-align: center; 
+
+/* form card */
+form{
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  padding:20px;
+  margin-bottom:25px;
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 8px 20px rgba(0,0,0,0.4);
 }
-input, textarea { 
-    flex: 1; 
-    padding: 10px; 
-    border-radius: 5px; 
-    border: 1px solid #ccc; 
-    font-size: 1rem; 
+
+/* input group */
+.input-group{
+  display:flex;
+  gap:6px;
+  margin-bottom:12px;
+  flex-wrap:wrap;
 }
-textarea { 
-    resize: vertical; 
-    min-height: 60px; 
+
+.input-box{
+  position:relative;
+  flex:1;
 }
-button { 
-    padding: 10px 20px; 
-    background: #007bff; 
-    color: #fff; 
-    border: none; 
-    border-radius: 5px; 
-    cursor: pointer; 
-    margin-right: 10px; 
+
+.input-box i{
+  position:absolute;
+  top:50%;
+  left:12px;
+  transform:translateY(-50%);
+  color:#aaa;
+  font-size:14px;
 }
-button i { 
-    margin-right: 5px; 
+
+input, textarea{
+  width:100%;
+  padding:10px 10px 10px 36px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color:#fff;
+  font-size:14px;
 }
-button:hover { 
-    background: #0056b3; 
+
+textarea{
+  min-height:70px;
+  resize:vertical;
 }
-.hide-btn { 
-    background: #dc3545; 
+
+input:focus, textarea:focus{
+  outline:none;
+  border-color:#00c6ff;
 }
-.hide-btn:hover { 
-    background: #a71d2a; 
+
+/* action buttons */
+.actions{
+  display:flex;
+  gap:5px;
+}
+
+.actions button{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.copy-btn{ background:#4CAF50; color:#fff; }
+.copy-btn:hover{ background:#3b8a40; }
+
+.paste-btn{ background:#ffa726; color:#fff; }
+.paste-btn:hover{ background:#fb8c00; }
+
+.clear-btn{ background:#ff4141; color:#fff; }
+.clear-btn:hover{ background:#d70000; }
+
+/* main buttons */
+.submit-btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  margin-top:10px;
+}
+
+.hide-btn{
+  width:100%;
+  padding:10px;
+  margin-top:8px;
+  border:none;
+  border-radius:8px;
+  background:#ff4141;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* toast */
+#toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:6px;
+  opacity:0;
+  transition:0.5s;
+  z-index:9999;
+}
+
+/* mobile */
+@media(max-width:600px){
+  .input-group{
+    flex-direction:column;
+  }
 }
 </style>
-
 </head>
+
 <body>
 
 <div id="forms-container"></div>
+<div id="toast"></div>
 
 <script>
-// ===== Cookie functions =====
-function getCookie(name) {
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop().split(';').shift();
-    return null;
-}
-function setCookie(name, value, days) {
-    const d = new Date();
-    d.setTime(d.getTime() + (days*24*60*60*1000));
-    document.cookie = name + "=" + value + ";path=/;expires=" + d.toUTCString();
+// toast
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.style.opacity = '1';
+  setTimeout(()=> toast.style.opacity='0', 2000);
 }
 
-// ===== Previously hidden forms =====
+// cookie
+function getCookie(name){
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if(parts.length === 2) return parts.pop().split(';').shift();
+  return null;
+}
+function setCookie(name,value,days){
+  const d = new Date();
+  d.setTime(d.getTime()+days*24*60*60*1000);
+  document.cookie = name+"="+value+";path=/;expires="+d.toUTCString();
+}
+
 let hiddenForms = getCookie('hiddenForms');
 hiddenForms = hiddenForms ? JSON.parse(hiddenForms) : [];
 
-// ===== Server Data =====
 const myAllData = <%- JSON.stringify(myAllData) %>;
 const container = document.getElementById('forms-container');
 
+function createField(icon,name,value,placeholder,type="text"){
+  return `
+  <div class="input-group">
+    <div class="input-box">
+      <i class="${icon}"></i>
+      <input id="${name}_${value}" name="${name}" value="${value || ''}" placeholder="${placeholder}" type="${type}">
+    </div>
+    <div class="actions">
+      <button type="button" class="copy-btn" onclick="copyInput(this)">Copy</button>
+      <button type="button" class="paste-btn" onclick="pasteInput(this)">Paste</button>
+      <button type="button" class="clear-btn" onclick="clearInput(this)">Clear</button>
+    </div>
+  </div>
+  `;
+}
+
 myAllData.forEach(data => {
-    if(hiddenForms.includes(data.routeName)) return;
+  if(hiddenForms.includes(data.routeName)) return;
 
-    const form = document.createElement('form');
-    form.method = "POST";
-    form.action = "https://links.p9x9.com/create"; // Normal POST to server
-    form.innerHTML = `
-        <div class="input-group"><i class="fa-solid fa-link"></i><input value="${data.routeName || ''}" name="routeName" placeholder="Route Name" required></div>
-        <div class="input-group"><i class="fa-solid fa-heading"></i><input value="${data.title || ''}" name="title" placeholder="Title"></div>
-        <div class="input-group"><i class="fa-solid fa-align-left"></i><textarea name="description" placeholder="Description">${data.description || ''}</textarea></div>
-        <div class="input-group"><i class="fa-solid fa-file-lines"></i><input value="${data.shortDescription || ''}" name="shortDescription" placeholder="Short Description"></div>
-        <div class="input-group"><i class="fa-solid fa-image"></i><input value="${data.imageLink || ''}" name="imageLink" placeholder="Image Link"></div>
-        <div class="input-group"><i class="fa-solid fa-video"></i><input value="${data.videoLink || ''}" name="videoLink" placeholder="Video Link"></div>
-        <div class="input-group"><i class="fa-solid fa-eye"></i><input value="0" name="totalView" type="number" placeholder="Total View"></div>
-        <div class="input-group"><i class="fa-solid fa-clock"></i><input value="${data.duration || ''}" name="duration" placeholder="Duration"></div>
-        <div class="input-group"><i class="fa-solid fa-tags"></i><input value="${data.category || ''}" name="category" placeholder="category1,category2"></div>
+  const form = document.createElement('form');
+  form.method = "POST";
+  form.action = "https://links.p9x9.com/create";
 
-        <button type="submit"><i class="fa-solid fa-paper-plane"></i> Publish Post</button>
-        <button type="button" class="hide-btn">Hide Data</button>
-    `;
+  form.innerHTML = `
+    ${createField("fa-solid fa-link","routeName",data.routeName,"Route Name")}
+    ${createField("fa-solid fa-heading","title",data.title,"Title")}
+    ${createField("fa-solid fa-align-left","description",data.description,"Description")}
+    ${createField("fa-solid fa-file-lines","shortDescription",data.shortDescription,"Short Description")}
+    ${createField("fa-solid fa-image","imageLink",data.imageLink,"Image Link")}
+    ${createField("fa-solid fa-video","videoLink",data.videoLink,"Video Link")}
+    ${createField("fa-solid fa-eye","totalView","0","Total View","number")}
+    ${createField("fa-solid fa-clock","duration",data.duration,"Duration")}
+    ${createField("fa-solid fa-tags","category",data.category,"Category")}
 
-    // ===== Auto-select text on first focus =====
-    const inputs = form.querySelectorAll('input, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('focus', () => input.select());
-        // Mobile & double click support
-        input.addEventListener('mouseup', e => e.preventDefault());
-    });
+    <button class="submit-btn" type="submit">
+      <i class="fa-solid fa-paper-plane"></i> Publish Post
+    </button>
 
-    // ===== Hide button =====
-    const hideBtn = form.querySelector('.hide-btn');
-    hideBtn.addEventListener('click', () => {
-        form.remove();
-        hiddenForms.push(data.routeName);
-        setCookie('hiddenForms', JSON.stringify(hiddenForms), 365);
-    });
+    <button type="button" class="hide-btn">Hide Data</button>
+  `;
 
-    container.appendChild(form);
+  // hide
+  form.querySelector('.hide-btn').addEventListener('click',()=>{
+    form.remove();
+    hiddenForms.push(data.routeName);
+    setCookie('hiddenForms',JSON.stringify(hiddenForms),365);
+    showToast("Hidden");
+  });
+
+  container.appendChild(form);
 });
+
+// actions
+function copyInput(btn){
+  const input = btn.closest('.input-group').querySelector('input,textarea');
+  navigator.clipboard.writeText(input.value);
+  showToast("Copied");
+}
+
+async function pasteInput(btn){
+  const input = btn.closest('.input-group').querySelector('input,textarea');
+  try{
+    input.value = await navigator.clipboard.readText();
+    showToast("Pasted");
+  }catch{
+    showToast("Blocked");
+  }
+}
+
+function clearInput(btn){
+  const input = btn.closest('.input-group').querySelector('input,textarea');
+  input.value = "";
+  showToast("Cleared");
+}
 </script>
 
 </body>

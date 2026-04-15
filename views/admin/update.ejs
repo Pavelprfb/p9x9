@@ -1,244 +1,337 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Update Post</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Update Post</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Font Awesome -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  />
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
 
-  <style>
-    body {
-      background: #121212;
-      color: #eaeaea;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
+}
 
-    .container {
-      width: 100%;
-      max-width: 600px;
-      padding: 20px;
-    }
+body{
+  background: linear-gradient(135deg, #141e30, #243b55);
+  color:#fff;
+  padding:20px;
+}
 
-    .card {
-      background: #1f1f1f;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.7);
-    }
+.container{
+  max-width:700px;
+  margin:0 auto;
+}
 
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
+.card{
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(12px);
+  padding:25px;
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 8px 20px rgba(0,0,0,0.4);
+}
 
-    .field {
-      position: relative;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+h2{
+  text-align:center;
+  margin-bottom:25px;
+}
 
-    .field i {
-      position: absolute;
-      left: 12px;
-      color: #888;
-      font-size: 14px;
-      pointer-events: none;
-    }
+.field{
+  margin-bottom:18px;
+}
 
-    input {
-      flex: 1;
-      padding: 12px 12px 12px 38px;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 10px;
-      color: #fff;
-      width: 70%;
-      font-size: 14px;
-    }
+label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:500;
+}
 
-    input:focus {
-      outline: none;
-      border-color: #03dac6;
-    }
+.input-wrapper{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
 
-    .actions {
-      display: flex;
-      gap: 4px;
-    }
+.input-box{
+  position:relative;
+  flex:1;
+}
 
-    .actions button {
-      padding: 8px 10px;
-      border: none;
-      border-radius: 8px;
-      background: #2a2a2a;
-      color: #ccc;
-      cursor: pointer;
-      font-size: 13px;
-    }
+.input-box i{
+  position:absolute;
+  top:50%;
+  left:12px;
+  transform:translateY(-50%);
+  color:#aaa;
+  font-size:14px;
+}
 
-    .actions button:hover {
-      background: #03dac6;
-      color: #121212;
-    }
+input{
+  width:100%;
+  padding:10px 10px 10px 36px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1);
+  color:#fff;
+  font-size:14px;
+}
 
-    .submit-btn {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      border: none;
-      border-radius: 10px;
-      background: #03dac6;
-      color: #121212;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
+input:focus{
+  outline:none;
+  border-color:#00c6ff;
+}
 
-    .submit-btn:hover {
-      background: #00bfa5;
-      transform: scale(1.03);
-    }
-  </style>
+.input-btn{
+  display:flex;
+  gap:6px;
+}
+
+.input-btn button{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  font-weight:600;
+  transition:0.3s;
+}
+
+.copy-btn{ background:#4CAF50; color:#fff; }
+.copy-btn:hover{ background:#3b8a40; }
+
+.paste-btn{ background:#ffa726; color:#fff; }
+.paste-btn:hover{ background:#fb8c00; }
+
+.clear-btn{ background:#ff4141; color:#fff; }
+.clear-btn:hover{ background:#d70000; }
+
+button[type="submit"]{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
+  background: linear-gradient(45deg, #00c6ff, #0072ff);
+  color:#fff;
+  font-size:16px;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+button[type="submit"]:hover{
+  transform:scale(1.03);
+  box-shadow:0 5px 15px rgba(0,114,255,0.4);
+}
+
+/* Toast */
+#toast{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background: rgba(0,0,0,0.85);
+  color:#fff;
+  padding:10px 18px;
+  border-radius:6px;
+  opacity:0;
+  pointer-events:none;
+  transition:0.5s;
+  z-index:9999;
+}
+
+/* Mobile */
+@media(max-width:480px){
+  .input-wrapper{
+    flex-direction:column;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
-    <div class="card">
-      <h2>✏️ Update Post</h2>
+<div class="container">
+<div class="card">
 
-      <form method="POST">
+<h2>✏️ Update Post</h2>
 
-        <!-- reusable field -->
-        <div class="field">
-          <i class="fas fa-route"></i>
-          <input name="routeName" value="<%= post.routeName %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
+<form method="POST">
 
-        <div class="field">
-          <i class="fas fa-heading"></i>
-          <input name="title" value="<%= post.title %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <i class="fas fa-heading"></i>
-          <input name="description" value="<%= post.description %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <i class="fas fa-image"></i>
-          <input name="imageLink" value="<%= post.imageLink %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <i class="fas fa-video"></i>
-          <input name="videoLink" value="<%= post.videoLink %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <i class="fas fa-eye"></i>
-          <input name="totalView" value="<%= post.totalView %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <i class="fas fa-clock"></i>
-          <input name="duration" value="<%= post.duration %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <i class="fas fa-tags"></i>
-          <input name="category" value="<%= post.category.join(',') %>">
-          <div class="actions">
-            <button type="button" onclick="copy(this)">📋</button>
-            <button type="button" onclick="paste(this)">📥</button>
-            <button type="button" onclick="clearInput(this)">❌</button>
-          </div>
-        </div>
-
-        <button class="submit-btn" type="submit">
-          <i class="fas fa-save"></i> Update
-        </button>
-
-      </form>
-    </div>
+<!-- Route -->
+<div class="field">
+<label>Route Name</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-route"></i>
+    <input id="routeName" name="routeName" value="<%= post.routeName %>">
   </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('routeName')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('routeName')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('routeName')">Clear</button>
+  </div>
+</div>
+</div>
 
-  <script>
-    function getInput(btn) {
-      return btn.closest('.field').querySelector('input');
-    }
+<!-- Title -->
+<div class="field">
+<label>Title</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-heading"></i>
+    <input id="title" name="title" value="<%= post.title %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('title')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('title')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('title')">Clear</button>
+  </div>
+</div>
+</div>
 
-    function copy(btn) {
-      const input = getInput(btn);
-      input.select();
-      document.execCommand('copy');
-    }
+<!-- Description -->
+<div class="field">
+<label>Description</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-align-left"></i>
+    <input id="description" name="description" value="<%= post.description %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('description')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('description')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('description')">Clear</button>
+  </div>
+</div>
+</div>
 
-    function paste(btn) {
-      const input = getInput(btn);
-      navigator.clipboard.readText().then(text => {
-        input.value = text;
-      });
-    }
+<!-- Image -->
+<div class="field">
+<label>Image Link</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-image"></i>
+    <input id="imageLink" name="imageLink" value="<%= post.imageLink %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('imageLink')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('imageLink')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('imageLink')">Clear</button>
+  </div>
+</div>
+</div>
 
-    function clearInput(btn) {
-      const input = getInput(btn);
-      input.value = '';
-    }
-  </script>
+<!-- Video -->
+<div class="field">
+<label>Video Link</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-video"></i>
+    <input id="videoLink" name="videoLink" value="<%= post.videoLink %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('videoLink')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('videoLink')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('videoLink')">Clear</button>
+  </div>
+</div>
+</div>
+
+<!-- Views -->
+<div class="field">
+<label>Total Views</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-eye"></i>
+    <input id="totalView" name="totalView" value="<%= post.totalView %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('totalView')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('totalView')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('totalView')">Clear</button>
+  </div>
+</div>
+</div>
+
+<!-- Duration -->
+<div class="field">
+<label>Duration</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-clock"></i>
+    <input id="duration" name="duration" value="<%= post.duration %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('duration')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('duration')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('duration')">Clear</button>
+  </div>
+</div>
+</div>
+
+<!-- Category -->
+<div class="field">
+<label>Category</label>
+<div class="input-wrapper">
+  <div class="input-box">
+    <i class="fas fa-tags"></i>
+    <input id="category" name="category" value="<%= post.category.join(',') %>">
+  </div>
+  <div class="input-btn">
+    <button type="button" class="copy-btn" onclick="copyInput('category')">Copy</button>
+    <button type="button" class="paste-btn" onclick="pasteInput('category')">Paste</button>
+    <button type="button" class="clear-btn" onclick="clearInput('category')">Clear</button>
+  </div>
+</div>
+</div>
+
+<button type="submit">
+<i class="fas fa-save"></i> Update
+</button>
+
+</form>
+</div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+function showToast(msg){
+  const toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.style.opacity = '1';
+  setTimeout(()=>{ toast.style.opacity = '0'; }, 2500);
+}
+
+function copyInput(id){
+  const input = document.getElementById(id);
+  navigator.clipboard.writeText(input.value);
+  showToast("✅ Copied");
+}
+
+async function pasteInput(id){
+  try{
+    const text = await navigator.clipboard.readText();
+    document.getElementById(id).value = text;
+    showToast("📋 Pasted");
+  }catch{
+    showToast("❌ Paste blocked");
+  }
+}
+
+function clearInput(id){
+  document.getElementById(id).value = "";
+  showToast("🗑 Cleared");
+}
+</script>
 
 </body>
 </html>

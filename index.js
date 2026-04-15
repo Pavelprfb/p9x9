@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const fs = require('fs');
 const Post = require('./models/Post');
 const cookieParser = require('cookie-parser');
 const setUrlMiddleware = require('./middleware');
@@ -188,6 +189,22 @@ app.get('/privacy', (req, res) => {
 app.get('/sitemap.xml', sitemapController.generateSitemap);
 app.get('/sitemap2.xml', videoSitemapController.generateVideoSitemap);
 
+
+
+app.get("/download", (req, res) => {
+  const fileUrl = req.query.url;
+
+  const fileName = "image.jpg";
+
+  fetch(fileUrl)
+    .then(r => r.arrayBuffer())
+    .then(buffer => {
+      res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+      res.setHeader("Content-Type", "image/jpeg");
+
+      res.send(Buffer.from(buffer));
+    });
+});
 
 // 404 page
 app.use((req, res) => {
