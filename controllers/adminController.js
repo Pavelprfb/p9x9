@@ -6,6 +6,11 @@ const axios = require('axios');
 ======================= */
 
 exports.addPage = (req,res)=>{
+
+  // 🔥 Cache disable
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
   res.render('admin/add');
 };
 
