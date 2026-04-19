@@ -4,6 +4,12 @@ const axios = require('axios');
 exports.dataPage = async (req, res) => {
   try {
     const allData = await Post.find({}).sort({ _id: -1 });
+
+    // 🔥 Cache disable
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+
     res.render("allData", { allData });
   } catch (err) {
     res.send("Server Error");

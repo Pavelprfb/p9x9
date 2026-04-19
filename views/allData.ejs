@@ -195,6 +195,18 @@ h2{
 
 <h2>Data To Desi.P9X9</h2>
 
+<div style="text-align:center; margin-bottom:15px;">
+  <button onclick="clearAllData()" 
+    style="padding:10px 15px; border:none; border-radius:8px; background:#ff4141; color:#fff; cursor:pointer;">
+    Clear All Data
+  </button>
+
+  <div style="margin-top:8px; font-size:14px; color:#ccc;">
+    Hidden: <span id="hiddenCount">0</span> |
+    Visible: <span id="visibleCount">0</span>
+  </div>
+</div>
+
 <div class="cards-container">
 
 <% allData.forEach((data) => { %>
@@ -293,60 +305,85 @@ method="post">
 
 <script>
 
-/* COOKIE LOGIC (UNCHANGED) */
+/* 🔥 HIDE + LOCAL STORAGE */
 function hideData(id) {
   let card = document.getElementById("card-" + id);
   if (card) card.style.display = "none";
 
-  let d = new Date();
-  d.setTime(d.getTime() + (365*24*60*60*1000));
-  document.cookie = `hide_${id}=true; expires=${d.toUTCString()}; path=/`;
+  localStorage.setItem("hide_" + id, "true");
 
   showToast("Hidden");
+  updateCount(); // realtime update
 }
 
-function getCookie(name) {
-  let value = "; " + document.cookie;
-  let parts = value.split("; " + name + "=");
-  if (parts.length === 2) return parts.pop().split(";").shift();
-}
-
+/* 🔄 ON LOAD */
 window.onload = function() {
   <% allData.forEach((data) => { %>
-    if(getCookie("hide_<%= data.id %>") === "true") {
+    if(localStorage.getItem("hide_<%= data.id %>") === "true") {
       let card = document.getElementById("card-<%= data.id %>");
       if(card) card.style.display = "none";
     }
   <% }) %>
+
+  updateCount();
 };
 
-/* COPY SYSTEM */
-function showToast(msg){
-  const toast=document.getElementById("toast");
-  toast.innerText=msg;
-  toast.style.opacity="1";
-  setTimeout(()=>toast.style.opacity="0",2000);
+/* 📊 REAL-TIME COUNT (DOM BASED) */
+function updateCount(){
+  const allCards = document.querySelectorAll(".data-card");
+
+  let hidden = 0;
+  let visible = 0;
+
+  allCards.forEach(card => {
+    if(card.style.display === "none"){
+      hidden++;
+    } else {
+      visible++;
+    }
+  });
+
+  document.getElementById("hiddenCount").innerText = hidden;
+  document.getElementById("visibleCount").innerText = visible;
 }
 
+/* 🔥 CLEAR ALL */
+function clearAllData(){
+  localStorage.clear();
+  showToast("All Data Cleared");
+  location.reload();
+}
+
+/* 📋 TOAST */
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  toast.innerText = msg;
+  toast.style.opacity = "1";
+  setTimeout(() => toast.style.opacity = "0", 2000);
+}
+
+/* 📋 COPY */
 function copyInput(btn){
-  const input=btn.closest(".input-group").querySelector("input");
+  const input = btn.closest(".input-group").querySelector("input");
   navigator.clipboard.writeText(input.value);
   showToast("Copied");
 }
 
+/* 📋 PASTE */
 async function pasteInput(btn){
-  const input=btn.closest(".input-group").querySelector("input");
+  const input = btn.closest(".input-group").querySelector("input");
   try{
-    input.value=await navigator.clipboard.readText();
+    input.value = await navigator.clipboard.readText();
     showToast("Pasted");
   }catch{
     showToast("Blocked");
   }
 }
 
+/* 📋 CLEAR INPUT */
 function clearInput(btn){
-  const input=btn.closest(".input-group").querySelector("input");
-  input.value="";
+  const input = btn.closest(".input-group").querySelector("input");
+  input.value = "";
   showToast("Cleared");
 }
 
