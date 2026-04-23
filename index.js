@@ -3,12 +3,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
+const cors = require("cors");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 60 }); // 60 sec cache
 const Post = require('./models/Post');
 const cookieParser = require('cookie-parser');
 const setUrlMiddleware = require('./middleware');
 const sitemapController = require('./controllers/sitemapController.js');
 const videoSitemapController = require('./controllers/videoSitemapController.js');
-const cors = require("cors");
 
 const app = express();
 app.use(cors())
@@ -38,70 +40,71 @@ app.use('/api', require('./routes/shareDataRoute'));
 // Homepage
 app.get("/", async (req, res) => {
   try {
+    const cacheKey = "homepage";
+    if (cache.has(cacheKey)) {
+      return res.render("index", cache.get(cacheKey));
+    }
+
     const query = req.query.q;
     const categoryQuery = req.query.category;
-
     const limit = 20;
-    const page = 1;
 
     let allData = [];
 
     if (query) {
-      // ✅ safe regex
       const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp(safeQuery, "i");
 
       allData = await Post.find({ title: { $regex: regex } })
-        .sort({ _id: -1 }) // 🔥 newest first fix
+        .sort({ _id: -1 })
         .limit(limit)
         .lean();
 
     } else if (categoryQuery) {
 
       allData = await Post.find({ category: categoryQuery })
-        .sort({ _id: -1 }) // 🔥 newest first fix
+        .sort({ _id: -1 })
         .limit(limit)
         .lean();
 
     } else {
-      // ✅ latest 5 (FIXED)
+
       const latestFive = await Post.find({})
-        .sort({ _id: -1 }) // 🔥 createdAt issue fix
+        .sort({ _id: -1 })
         .limit(10)
         .lean();
 
-      // ✅ random rest (optimized)
       const restData = await Post.aggregate([
-        {
-          $match: {
-            _id: { $nin: latestFive.map(d => d._id) }
-          }
-        },
+        { $match: { _id: { $nin: latestFive.map(d => d._id) } } },
         { $sample: { size: limit } }
       ]);
 
-      // ✅ merge + limit
       allData = [...latestFive, ...restData].slice(0, limit);
     }
 
-    // ✅ safe date format
     allData.forEach(p => {
-      if (p.createdAt) {
-        p.formattedDate = new Date(p.createdAt).toLocaleDateString();
-      } else {
-        p.formattedDate = "";
-      }
+      p.formattedDate = p.createdAt
+        ? new Date(p.createdAt).toLocaleDateString()
+        : "";
     });
 
-    // ✅ category optimize (no duplicate)
-    const categories = await Post.distinct("category");
+    // ✅ categories cache
+    let categories = cache.get("categories");
+    if (!categories) {
+      categories = await Post.distinct("category");
+      cache.set("categories", categories, 600);
+    }
 
-    res.render("index", {
+    const data = {
       allData,
       author: "P9X9",
       query,
       categories
-    });
+    };
+
+    cache.set(cacheKey, data);
+
+    res.render("index", data);
 
   } catch (err) {
     console.error(err);
@@ -110,49 +113,7 @@ app.get("/", async (req, res) => {
 });
 
 // API for AJAX pagination
-app.get("/api/posts", async (req, res) => {
-  try {
-    const query = req.query.q;
-    const categoryQuery = req.query.category;
-    const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const skip = (page - 1) * limit;
 
-    let allData = [];
-
-    if (query) {
-      const regex = new RegExp(query, "i");
-      allData = await Post.find({ title: { $regex: regex } }).skip(skip).limit(limit).lean();
-    } else if (categoryQuery) {
-      allData = await Post.find({ category: categoryQuery }).skip(skip).limit(limit).lean();
-    } else {
-      // latestFive only on page 1
-      let latestFive = [];
-      let restData = [];
-      if (page === 1) {
-        latestFive = await Post.find({}).sort({ createdAt: -1 }).limit(5).lean();
-        restData = await Post.aggregate([
-          { $match: { _id: { $nin: latestFive.map(d => d._id) } } },
-          { $sample: { size: limit } }
-        ]);
-      } else {
-        restData = await Post.aggregate([
-          { $skip: skip + 5 }, // skip first 5 latest
-          { $limit: limit }
-        ]);
-      }
-
-      allData = [...latestFive, ...restData];
-    }
-
-    allData.forEach(p => p.formattedDate = new Date(p.createdAt).toLocaleDateString());
-
-    res.json(allData);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server Error" });
-  }
-});
 // API endpoint for AJAX pagination
 app.get('/api/posts', async (req, res) => {
   try {
@@ -160,16 +121,25 @@ app.get('/api/posts', async (req, res) => {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const latestFive = await Post.find({}).sort({ createdAt: -1 }).limit(5).lean();
-    const restData = await Post.aggregate([
-      { $match: { _id: { $nin: latestFive.map(d => d._id) } } },
-      { $sample: { size: limit } }
-    ]);
+    const cacheKey = `posts_${page}`;
+    if (cache.has(cacheKey)) {
+      return res.json(cache.get(cacheKey));
+    }
 
-    latestFive.forEach(p => p.formattedDate = new Date(p.createdAt).toLocaleDateString());
-    restData.forEach(p => p.formattedDate = new Date(p.createdAt).toLocaleDateString());
+    const data = await Post.find({})
+      .sort({ _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
 
-    res.json([...latestFive, ...restData]);
+    data.forEach(p => {
+      p.formattedDate = new Date(p.createdAt).toLocaleDateString();
+    });
+
+    cache.set(cacheKey, data, 60);
+
+    res.json(data);
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server Error' });

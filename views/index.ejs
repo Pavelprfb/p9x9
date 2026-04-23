@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/css/index.css">
+<link rel="preload" href="/css/index.css" as="style" onload="this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="/css/index.css"></noscript>
 <title><%= websiteName %></title>
+<link rel="preload" as="image" href="<%= allData[0]?.imageLink %>">
 </head>
 <body>
 <%- include('partials/header') %>
@@ -14,7 +16,10 @@
   <h1><%= websiteName %></h1>
 
   <!-- Grid: AJAX will fill this -->
-  <div id="grid" class="grid"></div>
+  
+  <div id="grid"  class="grid">
+    <p>Loading...</p>
+  </div>
 
   <!-- Pagination -->
   <div class="pagination">
@@ -50,7 +55,7 @@
 <%- include('partials/footer') %>
 <%- include('partials/adultWarning') %>
 
-<script>
+<script defer>
 let currentPage = 1;
 
 // Load page from server
@@ -73,8 +78,15 @@ async function loadPage(page) {
       <a href="/videos/${item.routeName}" class="card-link">
         <div class="card">
           <div class="thumb">
-            <img loading="lazy" src="${item.imageLink}" alt="${item.title}">
-            ${item.duration && item.duration !== '0' ? `<div class="duration">${item.duration}</div>` : ''}
+            <img 
+                src="${item.imageLink}" 
+                loading="lazy" 
+                decoding="async"
+                alt="${item.title}
+              >
+            <div class="duration">
+              ${item.duration && item.duration !== '0' ? `<div class="duration">${item.duration}</div>` : ''}
+            </div>
           </div>
           <div class="content">
             <h3>${item.title}</h3>
