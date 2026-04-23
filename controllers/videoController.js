@@ -80,80 +80,63 @@ exports.singleData = async (req, res) => {
   try {
     const routeName = req.params.routeName.toLowerCase();
 
-    // =========================
-    // Get cookie
-    // =========================
     let viewedRoutes = req.cookies.viewedRoutes || [];
     if (!Array.isArray(viewedRoutes)) viewedRoutes = [];
 
-    // =========================
-    // Find video
-    // =========================
-    const video = await Post.findOne({ routeName });
-    const allData = await Post.find({});
+    // ✅ only required fields (VERY IMPORTANT)
+    const video = await Post.findOne({ routeName })
+      .select("title description imageLink videoLink duration totalView createdAt category routeName")
+      .lean();
 
     if (!video) return res.status(404).send('Video not found');
 
-    // =========================
-    // TIME & DATE CONVERT LOGIC
-    // =========================
+    // ❌ REMOVE: allData = await Post.find({});
+
+    // 👉 instead lightweight suggested query
+    const suggested = await Post.find(
+      { routeName: { $ne: routeName } }
+    )
+    .select("title imageLink duration totalView routeName category createdAt")
+    .sort({ _id: -1 })
+    .limit(30)
+    .lean();
+
+    // ================= TIME FORMAT =================
     let isoTime = null;
     let formattedDate = null;
 
-    // ---- Duration → ISO (PT1M9S)
     if (video.duration) {
-      // ধরলাম duration = "01:09"
-      const timeStr = video.duration;
-      const parts = timeStr.split(':');
-
-      const minutes = Number(parts[0]) || 0;
-      const seconds = Number(parts[1]) || 0;
-
-      isoTime = `PT${minutes}M${seconds}S`;
+      const parts = video.duration.split(':');
+      const m = Number(parts[0]) || 0;
+      const s = Number(parts[1]) || 0;
+      isoTime = `PT${m}M${s}S`;
     }
 
-    // ---- createdAt → YYYY-MM-DD
     if (video.createdAt) {
-      const dateObj = new Date(video.createdAt);
-
-      const year = dateObj.getFullYear();
-      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const day = String(dateObj.getDate()).padStart(2, '0');
-
-      formattedDate = `${year}-${month}-${day}`;
+      const d = new Date(video.createdAt);
+      formattedDate = d.toISOString().split('T')[0];
     }
 
-    // =========================
-    // View count logic
-    // =========================
+    // ================= VIEW COUNT =================
+    let updatedVideo = video;
+
     if (!viewedRoutes.includes(routeName)) {
-      const updatedVideo = await Post.findOneAndUpdate(
+      updatedVideo = await Post.findOneAndUpdate(
         { routeName },
         { $inc: { totalView: 1 } },
         { new: true }
-      );
+      ).lean();
 
-      // Update cookie
       viewedRoutes.push(routeName);
       res.cookie('viewedRoutes', viewedRoutes, {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60 * 24 * 7,
         httpOnly: true
-      });
-
-      return res.render('videos/video', {
-        oneData: updatedVideo,
-        allData,
-        isoTime,
-        formattedDate
       });
     }
 
-    // =========================
-    // Already viewed
-    // =========================
     res.render('videos/video', {
-      oneData: video,
-      allData,
+      oneData: updatedVideo,
+      suggested,
       isoTime,
       formattedDate
     });

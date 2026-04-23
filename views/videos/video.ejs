@@ -58,11 +58,15 @@
   }
 }
 </script>
-  
+  <link rel="preload" as="video" href="<%= oneData.videoLink %>">
+  <link rel="preload" as="image" href="<%= oneData.imageLink %>">
   <style>
     .downloadBtn{
       display: block;
       text-align: center;
+    }
+    .video-card video{
+      width: 100%;
     }
   </style>
 </head>
@@ -115,34 +119,35 @@
   <h2 style="margin-top:30px; color:#38bdf8;">Suggested Videos</h2>
 
   <div class="grid" id="suggestedContainer">
-    <%
-const randomVideos = allData
-  .filter(v => v._id.toString() !== oneData._id.toString())
-  .sort(() => Math.random() - 0.5);
-randomVideos.slice(0,10).forEach(video => {
+
+<%
+const randomVideos = (suggested || [])
+  .filter(v => v.routeName !== oneData.routeName)
+  .slice(0, 10);
 %>
-      <a href="/videos/<%= video.routeName %>" class="card-link">
-        <div class="card">
-          <div class="thumb">
-            <img src="<%= video.imageLink %>" alt="<%= video.title %>">
-            <% if(video.duration && video.duration !== '0') { %>
-              <div class="duration"><%= video.duration %></div>
-            <% } %>
-          </div>
 
-          <div class="content">
-            <h3><%= video.title %></h3>
+<div class="grid" id="suggestedContainer">
+  <% randomVideos.forEach(video => { %>
+    <a href="/videos/<%= video.routeName %>" class="card-link">
+      <div class="card">
+        <div class="thumb">
+          <img src="<%= video.imageLink %>" alt="<%= video.title %>" loading="lazy">
+          <% if(video.duration && video.duration !== '0') { %>
+            <div class="duration"><%= video.duration %></div>
+          <% } %>
+        </div>
 
-            
+        <div class="content">
+          <h3><%= video.title %></h3>
 
-            <div class="footer">
-              <span>👁 <%= video.totalView %> views</span>
-            </div>
+          <div class="footer">
+            <span>👁 <%= video.totalView %> views</span>
           </div>
         </div>
-      </a>
-    <% }) %>
-  </div>
+      </div>
+    </a>
+  <% }) %>
+</div>
   <button id="loadMoreBtn" style="margin-top:20px; padding:10px 20px; background:#38bdf8; color:#020617; border:none; border-radius:8px; cursor:pointer;">More Videos</button>
 
 </div>
@@ -150,58 +155,68 @@ randomVideos.slice(0,10).forEach(video => {
 <%- include('../partials/footer') %>
 
 <!-- Plyr JS -->
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-
 <script>
   const player = new Plyr('#player', {
     autoplay: false,
     controls: [
       'play-large','play','progress','current-time','mute','volume','settings','fullscreen'
     ],
-    settings: ['speed'],
-    speed: { selected: 1, options: [0.5,0.75,1,1.25,1.5,2] }
+    settings: ['speed']
   });
 
-  // Load More functionality
-  const allVideos = <%- JSON.stringify(
-  allData
-    .filter(v => v._id.toString() !== oneData._id.toString())
-    .sort(() => Math.random() - 0.5)
-) %>;
+  let allVideos = [];
   let shown = 10;
 
   const btn = document.getElementById('loadMoreBtn');
   const container = document.getElementById('suggestedContainer');
 
+  async function loadSuggested() {
+    try {
+      const res = await fetch('/api/suggested?skip=0');
+      allVideos = await res.json();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   btn.addEventListener('click', () => {
     const nextVideos = allVideos.slice(shown, shown + 10);
+
     nextVideos.forEach(video => {
       const div = document.createElement('a');
       div.href = `/videos/${video.routeName}`;
       div.className = 'card-link';
+
       div.innerHTML = `
         <div class="card">
           <div class="thumb">
-            <img src="${video.imageLink}" alt="${video.title}">
-            ${video.duration && video.duration !== '0' ? `<div class="duration">${video.duration}</div>` : ''}
+            <img src="${video.imageLink}" loading="lazy" width="300" height="200">
+            ${video.duration && video.duration !== '0'
+              ? `<div class="duration">${video.duration}</div>`
+              : ''
+            }
           </div>
+
           <div class="content">
             <h3>${video.title}</h3>
-            <div class="category">
-              ${video.category.map(cat => `<span>${cat.trim()}</span>`).join('')}
-            </div>
             <div class="footer">
               <span>👁 ${video.totalView} views</span>
-              <span>📅 ${new Date(video.createdAt).toLocaleDateString()}</span>
             </div>
           </div>
         </div>
       `;
+
       container.appendChild(div);
     });
+
     shown += 10;
-    if(shown >= allVideos.length) btn.style.display = 'none';
+
+    if (shown >= allVideos.length) {
+      btn.style.display = 'none';
+    }
   });
+
+  document.addEventListener('DOMContentLoaded', loadSuggested);
 </script>
 
 </body>
