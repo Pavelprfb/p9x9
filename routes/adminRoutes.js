@@ -10,7 +10,7 @@ router.post('/', c.adminLoginPost);
 router.get('/dashboard', adminAuth, c.adminDashboardGet);
 
 router.get('/add', adminAuth, c.addPage);
-router.post('/add', adminAuth, c.createPost);
+router.post('/add', c.createPost);
 
 router.get('/update', adminAuth, c.listPage);
 router.get('/update/:id', adminAuth, c.editPage);
