@@ -69,7 +69,7 @@ exports.createPost = async (req, res) => {
     // 🔥 STEP 2: API SYNC (wait until finish)
     // =========================
     let apiSuccess = false;
-    let apiMessage = "Not attempted";
+    let apiMessage = "API not attempted";
 
     try {
       const apiRes = await axios.post(
@@ -85,20 +85,16 @@ exports.createPost = async (req, res) => {
             "Content-Type": "application/json",
             "x-api-key": "pabelprfb"
           },
-          timeout: 15000 // 🔥 increased (was 5000)
+          timeout: 15000
         }
       );
-
+    
       apiSuccess = true;
       apiMessage = "API Sync Success";
-
-      console.log("✅ API Sync Success");
-
+    
     } catch (apiError) {
       apiSuccess = false;
-      apiMessage = apiError.message;
-
-      console.error("❌ API Sync Failed:", apiError.message);
+      apiMessage = apiError?.message || "API failed";
     }
 
     // =========================
