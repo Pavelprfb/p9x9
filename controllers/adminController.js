@@ -27,10 +27,24 @@ exports.createPost = async (req, res) => {
       });
     }
 
+    // normalize routeName
     if (data.routeName) {
       data.routeName = data.routeName.toLowerCase().trim();
     }
 
+    // 🔥 NEW: duplicate check (IMPORTANT)
+    const existingPost = await Post.findOne({
+      routeName: data.routeName
+    });
+
+    if (existingPost) {
+      return res.json({
+        success: false,
+        message: "⚠ This routeName already exists"
+      });
+    }
+
+    // category sanitize
     if (data.category) {
       data.category = data.category
         .split(",")
@@ -65,6 +79,7 @@ exports.createPost = async (req, res) => {
 
     return res.json({
       success: true,
+      message: "Post created successfully",
       apiSuccess: apiSuccess
     });
 
