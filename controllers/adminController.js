@@ -20,17 +20,17 @@ exports.createPost = async (req, res) => {
 
     const { routeName, title, imageLink, videoLink, duration, description, category } = data;
 
-    // 🔒 Basic validation
     if (!routeName || !title || !imageLink || !videoLink || !description || !category) {
-      return res.status(400).send("All fields are required");
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
     }
 
-    // 🔒 Normalize routeName
     if (data.routeName) {
       data.routeName = data.routeName.toLowerCase().trim();
     }
 
-    // 🔒 Category sanitize
     if (data.category) {
       data.category = data.category
         .split(",")
@@ -38,10 +38,10 @@ exports.createPost = async (req, res) => {
         .filter(c => c.length > 0);
     }
 
-    // 🔒 Save to DB
     const newPost = await Post.create(data);
 
-    // 🚀 External API call
+    let apiSuccess = true;
+
     try {
       await axios.post("https://api.p9x9.com/add-movie", {
         id: newPost.routeName.replace(/^\//, ''),
@@ -51,23 +51,30 @@ exports.createPost = async (req, res) => {
       }, {
         headers: {
           "Content-Type": "application/json",
-          // 🔐 optional secret token (recommended)
           "x-api-key": "pabelprfb"
         },
         timeout: 5000
       });
 
       console.log("✅ API Sync Success");
+
     } catch (apiError) {
+      apiSuccess = false;
       console.error("❌ API Sync Failed:", apiError.message);
-      // ❗ API fail হলেও DB save থাকবে
     }
 
-    res.redirect("/admin/update");
+    return res.json({
+      success: true,
+      apiSuccess: apiSuccess
+    });
 
   } catch (error) {
     console.error("❌ Create Post Error:", error.message);
-    res.status(500).send("Server Error");
+
+    return res.status(500).json({
+      success: false,
+      message: "Server Error"
+    });
   }
 };
 
