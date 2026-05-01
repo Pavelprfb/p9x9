@@ -18,7 +18,15 @@ exports.createPost = async (req, res) => {
   try {
     let data = { ...req.body };
 
-    const { routeName, title, imageLink, videoLink, duration, description, category } = data;
+    const {
+      routeName,
+      title,
+      imageLink,
+      videoLink,
+      duration,
+      description,
+      category
+    } = data;
 
     if (!routeName || !title || !imageLink || !videoLink || !description || !category) {
       return res.status(400).json({
@@ -32,7 +40,7 @@ exports.createPost = async (req, res) => {
       data.routeName = data.routeName.toLowerCase().trim();
     }
 
-    // 🔥 NEW: duplicate check (IMPORTANT)
+    // duplicate check
     const existingPost = await Post.findOne({
       routeName: data.routeName
     });
@@ -52,39 +60,59 @@ exports.createPost = async (req, res) => {
         .filter(c => c.length > 0);
     }
 
+    // =========================
+    // 🔥 STEP 1: SAVE DB FIRST
+    // =========================
     const newPost = await Post.create(data);
 
-    let apiSuccess = true;
+    // =========================
+    // 🔥 STEP 2: API SYNC (wait until finish)
+    // =========================
+    let apiSuccess = false;
+    let apiMessage = "Not attempted";
 
     try {
-      await axios.post("https://api.p9x9.com/add-movie", {
-        id: newPost.routeName.replace(/^\//, ''),
-        hadding: newPost.title,
-        img: newPost.imageLink,
-        play: newPost.videoLink
-      }, {
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": "pabelprfb"
+      const apiRes = await axios.post(
+        "https://api.p9x9.com/add-movie",
+        {
+          id: newPost.routeName.replace(/^\//, ''),
+          hadding: newPost.title,
+          img: newPost.imageLink,
+          play: newPost.videoLink
         },
-        timeout: 5000
-      });
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": "pabelprfb"
+          },
+          timeout: 15000 // 🔥 increased (was 5000)
+        }
+      );
+
+      apiSuccess = true;
+      apiMessage = "API Sync Success";
 
       console.log("✅ API Sync Success");
 
     } catch (apiError) {
       apiSuccess = false;
+      apiMessage = apiError.message;
+
       console.error("❌ API Sync Failed:", apiError.message);
     }
 
+    // =========================
+    // FINAL RESPONSE
+    // =========================
     return res.json({
       success: true,
       message: "Post created successfully",
-      apiSuccess: apiSuccess
+      apiSuccess,
+      apiMessage
     });
 
   } catch (error) {
-    console.error("❌ Create Post Error:", error.message);
+    console.error("❌ Create Post Error:", error);
 
     return res.status(500).json({
       success: false,
@@ -92,7 +120,6 @@ exports.createPost = async (req, res) => {
     });
   }
 };
-
 
 
 exports.listPage = async (req, res) => {
